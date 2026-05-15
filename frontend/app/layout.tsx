@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Header from "./components/Header";
 import "./globals.css";
-
+import footer from "./components/Footer";
+import Footer from "./components/Footer";
 export default function RootLayout({
   children,
 }: {
@@ -15,6 +16,7 @@ export default function RootLayout({
         <main className="flex-grow">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
