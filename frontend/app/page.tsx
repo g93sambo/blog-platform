@@ -1,8 +1,23 @@
+'use client';
+
+import { useState } from "react";
+import { Hero } from "../components/home/Hero";
+import CategoryBar from "../components/home/CategoryBar";
+import PostGrid from "../components/home/PostGrid";
+
 export default function Home() {
+  const [activeCategory, setActiveCategory] = useState("All");
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">Project Root</h1>
-      <p className="mt-4">Baseline initialized. Ready for development.</p>
+    <main className="min-h-screen bg-white">
+      <Hero />
+      <div className="max-w-7xl mx-auto px-6">
+        <CategoryBar 
+          activeCategory={activeCategory} 
+          setActiveCategory={setActiveCategory} 
+        />
+        <PostGrid activeCategory={activeCategory} />
+      </div>
     </main>
   );
 }

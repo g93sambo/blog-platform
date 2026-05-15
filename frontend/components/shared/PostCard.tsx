@@ -13,29 +13,31 @@ export const PostCard = ({ category, title, author, readTime, color, description
   const isSmall = variant === 'small';
 
   return (
-    <article className={`flex flex-col overflow-hidden rounded-xl border border-[#d2d2da] bg-white transition-shadow hover:shadow-md h-full`}>
-      {/* Dynamic Banner Height */}
-      <div className={`${isFeatured ? 'h-40' : 'h-24'} w-full`} style={{ backgroundColor: color }} />
+    <article className="flex flex-col overflow-hidden rounded-xl border border-[#d2d2da] bg-white h-full transition-all hover:shadow-lg">
+      {/* Dynamic Banner Height: h-24 for small, h-48 for medium/vertical, h-64 for featured */}
+      <div 
+        className={`${isSmall ? 'h-24' : isFeatured ? 'h-64' : 'h-48'} w-full transition-all`} 
+        style={{ backgroundColor: color }} 
+      />
       
-      <div className="flex flex-col p-4 flex-grow">
-        <span className="w-fit px-3 py-1 rounded-full bg-opacity-20 mb-3 text-[11px] font-medium" 
-              style={{ backgroundColor: color, color: '#333' }}>
+      <div className="flex flex-col p-5 flex-grow gap-3">
+        <span className="w-fit px-3 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700">
           {category}
         </span>
         
-        <h2 className={`font-bold text-[#14141e] mb-2 ${isFeatured ? 'text-xl' : 'text-sm'}`}>
+        <h2 className={`font-bold text-[#14141e] leading-tight ${isFeatured ? 'text-2xl' : 'text-lg'}`}>
           {title}
         </h2>
 
-        {/* Only Featured and Medium cards get descriptions */}
-        {description && !isSmall && (
-          <p className="text-xs text-[#787882] line-clamp-3 mb-4 text-justify">
+        {description && (
+          <p className="text-sm text-[#787882] line-clamp-3 text-justify leading-relaxed">
             {description}
           </p>
         )}
 
-        <div className="mt-auto pt-2 text-[11px] text-[#787882]">
-          <span className="font-medium">{author}</span> · {readTime}
+        <div className="mt-auto pt-4 flex justify-between items-center text-[11px] text-[#787882] border-t border-gray-50">
+          <span className="font-medium text-gray-900">{author}</span>
+          <span>{readTime}</span>
         </div>
       </div>
     </article>
