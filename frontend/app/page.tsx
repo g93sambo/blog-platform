@@ -10,7 +10,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* The Navigation Header and Main text are built inside this Hero component */}
       <Hero />
+      
       <div className="max-w-7xl mx-auto px-6">
         <CategoryBar 
           activeCategory={activeCategory} 

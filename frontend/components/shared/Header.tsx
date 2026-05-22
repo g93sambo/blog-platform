@@ -18,12 +18,21 @@ export default function Header() {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-4">
-        <button className="px-5 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50">
+        {/* Changed from button to Link pointing to /login */}
+        <Link 
+          href="/login" 
+          className="px-5 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 text-center"
+        >
           Log in
-        </button>
-        <button className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        </Link>
+        
+        {/* Changed from button to Link pointing to /register */}
+        <Link 
+          href="/register" 
+          className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center"
+        >
           Get started
-        </button>
+        </Link>
       </div>
     </header>
   );
