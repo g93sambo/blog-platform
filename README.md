@@ -131,7 +131,7 @@ Frontend runs at **http://localhost:5173**
 
 **Frontend**
 - React 18 + TypeScript
-- Vite
+- Next
 - React Router v6
 - Axios
 - react-hot-toast
@@ -148,10 +148,10 @@ Frontend runs at **http://localhost:5173**
 
 ### Example branch names
 ```
-feature/adongo-post-model
-feature/kukoyi-home-page
-feature/soyinka-deployment
-feature/obarisiagbon-readme
+feat/adongo-post-model
+feat/kukoyi-home-page
+feat/soyinka-deployment
+feat/obarisiagbon-readme
 ```
 
 ---
