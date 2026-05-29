@@ -68,7 +68,8 @@ export default function LoginCard() {
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500">
                   Password
                 </label>
-                <Link href="#" className="text-xs font-medium text-blue-500 hover:underline">
+                {/* Updated Route Link here */}
+                <Link href="/forgot-password" className="text-xs font-medium text-blue-500 hover:underline">
                   Forgot password?
                 </Link>
               </div>
