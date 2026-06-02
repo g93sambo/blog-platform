@@ -1,35 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 
 export default function LoginCard() {
-  const router = useRouter();
-  const { login, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!email || !password) {
-      setError('Please enter email and password');
-      return;
-    }
-
-    try {
-      await login(email, password);
-      router.push('/analytics');
-    } catch (err) {
-      setError('Login failed. Try again!');
-    }
-  };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased font-sans">
       {/* Outer Card Container */}
@@ -74,15 +48,9 @@ export default function LoginCard() {
             </p>
           </div>
 
-          {/* Form - Uses Ngige's Submit handler & error alert element */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-200">
-                {error}
-              </div>
-            )}
-
-            {/* Email Field - Uses Ngige's values */}
+          {/* Form */}
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+            {/* Email Field */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
                 Email Address
@@ -90,13 +58,11 @@ export default function LoginCard() {
               <input
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
-            {/* Password Field - Uses Ngige's toggle functionality */}
+            {/* Password Field */}
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500">
@@ -108,19 +74,13 @@ export default function LoginCard() {
               </div>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type="password"
                   placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer text-xs select-none"
-                >
-                  {showPassword ? '🙈' : '👁️'}
-                </button>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer text-xs select-none">
+                  👁️
+                </span>
               </div>
             </div>
 
@@ -137,14 +97,13 @@ export default function LoginCard() {
               </label>
             </div>
 
-            {/* Action Button - Uses Ngige's loading & disabled states */}
+            {/* Action Button */}
             <button
               type="submit"
-              disabled={isLoading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99] disabled:opacity-50"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99]"
             >
-              <span>{isLoading ? 'Logging in...' : 'Log in'}</span>
-              {!isLoading && <span className="text-base font-light">→</span>}
+              <span>Log in</span>
+              <span className="text-base font-light">→</span>
             </button>
           </form>
 
@@ -156,7 +115,7 @@ export default function LoginCard() {
             <span className="relative bg-white px-4 text-xs text-gray-400">or continue with</span>
           </div>
 
-          {/* Google Sign-In Block Asset from Main */}
+          {/* Google Button */}
           <button
             type="button"
             className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 active:bg-gray-100"
