@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
@@ -14,47 +13,61 @@ connectDB();
 
 const app = express();
 
-// CORS — allow the frontend origin (set FRONTEND_URL in production env vars)
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+// ─── CORS ──────────────────────────────────────────────────────────────────
+// Must be the FIRST middleware so preflight OPTIONS requests are handled
+// before any other route logic (critical for Vercel serverless).
+app.use((req, res, next) => {
+  const origin = req.headers.origin || '';
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      origin.endsWith('.netlify.app')
-    ) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS: origin ${origin} not allowed`));
-  },
-  credentials: true,
-}));
+  const isAllowed =
+    !origin ||                          // same-origin / server-to-server
+    origin === 'http://localhost:3000' ||
+    origin === 'http://localhost:3001' ||
+    origin.endsWith('.vercel.app') ||
+    origin.endsWith('.netlify.app') ||
+    (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL);
+
+  if (isAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type,Authorization,X-Requested-With'
+    );
+  }
+
+  // Respond immediately to preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  next();
+});
+
+// ─── Body Parsing ────────────────────────────────────────────────────────────
 app.use(express.json());
 
-// --- Routes ---
+// ─── Routes ──────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 
-// --- Health Check ---
+// ─── Health Check ────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Blog Platform API is running 🚀' });
 });
 
-// --- 404 Handler ---
+// ─── 404 Handler ─────────────────────────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// --- Global Error Handler ---
+// ─── Global Error Handler ────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
