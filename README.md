@@ -8,7 +8,7 @@
 | 1 | 24120112005 | ADONGO, Oryiman | Team Lead |
 | 2 | 24120112011 | AROWOLO, Adetunlese | Backend Dev |
 | 3 | 23120112018 | ERIC-MAKWE, Chigozirim | Backend Dev |
-| 4 | 24120112027 | KUKOYI, Oluwajuwonlo | Frontend Dev |
+| 4 | 24120112027 | KUKOYI, Oluwajuwonlo | Presentation Designer |
 | 5 | 24120112036 | NGIGE, Nnaemeka | Frontend Dev |
 | 6 | 25120112062 | OBARISIAGBON, Eseosa | Frontend Dev |
 | 7 | 24120112046 | ONWUEGBUCHU, Brian | QA / Docs |
