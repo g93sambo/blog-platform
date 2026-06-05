@@ -8,39 +8,20 @@ import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
-// ─── CORS ──────────────────────────────────────────────────────────────────
-// Must be the FIRST middleware so preflight OPTIONS requests are handled
-// before any other route logic (critical for Vercel serverless).
+// ─── STEP 1: CORS — MUST BE ABSOLUTE FIRST ───────────────────────────────────
+// Echo the requesting origin back so any Vercel/Netlify/localhost domain works.
+// This runs before EVERYTHING — DB connection, body parsing, routes.
+// If this doesn't run first, CORS errors appear even when the server crashes.
 app.use((req, res, next) => {
-  const origin = req.headers.origin || '';
+  const origin = req.headers.origin;
+  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
 
-  const isAllowed =
-    !origin ||                          // same-origin / server-to-server
-    origin === 'http://localhost:3000' ||
-    origin === 'http://localhost:3001' ||
-    origin.endsWith('.vercel.app') ||
-    origin.endsWith('.netlify.app') ||
-    (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL);
-
-  if (isAllowed) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type,Authorization,X-Requested-With'
-    );
-  }
-
-  // Respond immediately to preflight requests
+  // Preflight — respond immediately, no further processing needed
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
   }
@@ -48,26 +29,40 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── Body Parsing ────────────────────────────────────────────────────────────
+// ─── STEP 2: Body Parsing ─────────────────────────────────────────────────────
 app.use(express.json());
 
-// ─── Routes ──────────────────────────────────────────────────────────────────
+// ─── STEP 3: Lazy DB Connection ───────────────────────────────────────────────
+// Connect per-request instead of at startup.
+// On Vercel serverless, startup crashes kill CORS headers.
+// Lazy connection means CORS always runs first, DB errors return proper JSON.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection failed:', err.message);
+    return res.status(503).json({ message: 'Database unavailable. Check MONGODB_URI env var.' });
+  }
+});
+
+// ─── STEP 4: Routes ───────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 
-// ─── Health Check ────────────────────────────────────────────────────────────
+// ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Blog Platform API is running 🚀' });
 });
 
-// ─── 404 Handler ─────────────────────────────────────────────────────────────
+// ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// ─── Global Error Handler ────────────────────────────────────────────────────
+// ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -75,9 +70,12 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+// Only start listening when running locally (not on Vercel serverless)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
+}
 
 export default app;
