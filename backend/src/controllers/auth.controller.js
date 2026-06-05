@@ -12,14 +12,14 @@ const signToken = (id) =>
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({ message: 'Email or username already in use' });
     }
-
-    const user = await User.create({ name, email, password });
+   
+    const user = await User.create({ fullName, username, email, password });
     const token = signToken(user._id);
 
     res.status(201).json({
@@ -27,7 +27,8 @@ export const register = async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        fullName: user.fullName,
+        username: user.username,
         email: user.email,
         role: user.role,
         avatar: user.avatar,
@@ -61,7 +62,8 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        fullName: user.fullName,
+        username: user.username,
         email: user.email,
         role: user.role,
         avatar: user.avatar,
@@ -76,6 +78,6 @@ export const login = async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 export const getMe = async (req, res) => {
-  const { _id: id, name, email, bio, avatar, role, createdAt } = req.user;
-  res.json({ id, name, email, bio, avatar, role, createdAt });
+  const { _id: id, fullName, username, email, bio, avatar, role, createdAt } = req.user;
+  res.json({ id, fullName, username, email, bio, avatar, role, createdAt });
 };

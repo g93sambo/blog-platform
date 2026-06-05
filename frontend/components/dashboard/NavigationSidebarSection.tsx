@@ -7,19 +7,19 @@ const navigationItems = [
     { label: "Settings", icon: "⚙", top: "top-[352px]", active: false },
   ];
   
-  export const NavigationSidebarSection = (): JSX.Element => {
+  export const NavigationSidebarSection = () => {
     return (
       <aside
         aria-label="Sidebar navigation"
         className="relative h-[982px] w-60 bg-[#121828]"
       >
         <div className="absolute left-6 top-7 flex items-baseline">
-          <span className="[font-family:'Inter-Bold',Helvetica] text-lg font-bold leading-[normal] tracking-[0] text-[#378add]">
+          <a href= "/" className="[font-family:'Inter-Bold',Helvetica] text-lg font-bold leading-[normal] tracking-[0] text-[#378add]" >
             Blog
-          </span>
-          <span className="[font-family:'Inter-Medium',Helvetica] text-lg font-medium leading-[normal] tracking-[0] text-white">
+          </a>
+          <a href="/" className="[font-family:'Inter-Medium',Helvetica] text-lg font-medium leading-[normal] tracking-[0] text-white">
             ify
-          </span>
+          </a>
         </div>
         <nav aria-label="Primary" className="relative h-full w-full">
           <ul className="m-0 list-none p-0">

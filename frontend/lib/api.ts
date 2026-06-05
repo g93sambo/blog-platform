@@ -48,7 +48,7 @@ class ApiClient {
 
       return {
         success: true,
-        data: data.data || data,
+        data: data,
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -87,18 +87,18 @@ class ApiClient {
 
   // USER ENDPOINTS
   async getProfile(): Promise<ApiResponse<User>> {
-    return this.request('/users/profile');
+    return this.request('/users/me');
   }
 
   async updateProfile(updates: Partial<User>): Promise<ApiResponse<User>> {
-    return this.request('/users/profile', {
+    return this.request('/users/me', {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
   async updatePassword(currentPassword: string, newPassword: string): Promise<ApiResponse<void>> {
-    return this.request('/users/password', {
+    return this.request('/users/me/password', {
       method: 'PUT',
       body: JSON.stringify({ currentPassword, newPassword }),
     });
@@ -144,8 +144,12 @@ class ApiClient {
     });
   }
 
-  async getMyPosts(page = 1, limit = 10): Promise<ApiResponse<PaginatedResponse<Post>>> {
+  async getMyPosts(page = 1, limit = 20): Promise<ApiResponse<PaginatedResponse<Post>>> {
     return this.request(`/posts/my-posts?page=${page}&limit=${limit}`);
+  }
+
+  async getDashboardStats(): Promise<ApiResponse<{ totalPosts: number; totalViews: number; totalLikes: number; followers: number; recentPosts: Post[] }>> {
+    return this.request('/posts/dashboard-stats');
   }
 
   async toggleLikePost(id: string): Promise<ApiResponse<Post>> {

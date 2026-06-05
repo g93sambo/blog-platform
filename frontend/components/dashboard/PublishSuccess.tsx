@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, Copy, Twitter, Share2, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Copy, Share2, ArrowRight } from 'lucide-react';
 
 interface PublishSuccessProps {
   postTitle: string;
@@ -51,7 +51,9 @@ export default function PublishSuccess({
       {/* Social Promotion Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 w-full">
         <button className="flex-1 py-2.5 bg-[#1DA1F2] hover:bg-[#1a91da] text-white font-medium text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm">
-          <Twitter className="w-4 h-4" />
+          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
           Share on X
         </button>
         <button className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm">

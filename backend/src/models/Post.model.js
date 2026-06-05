@@ -21,6 +21,19 @@ const postSchema = new mongoose.Schema(
       type: String,
       maxlength: 500,
     },
+    description: {
+      type: String,
+      maxlength: 300,
+      default: '',
+    },
+    category: {
+      type: String,
+      default: 'General',
+    },
+    readTime: {
+      type: String,
+      default: '1m',
+    },
     coverImage: {
       type: String,
       default: '',
@@ -36,6 +49,7 @@ const postSchema = new mongoose.Schema(
       default: false,
     },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     views: {
       type: Number,
       default: 0,

@@ -6,17 +6,18 @@ import Comment from '../models/Comment.model.js';
 // @access  Public
 export const getAllPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 10, tag, search } = req.query;
+    const { page = 1, limit = 10, tag, search, category } = req.query;
     const query = { published: true };
 
     if (tag) query.tags = tag;
+    if (category && category !== 'All') query.category = category;
     if (search) query.$or = [
       { title: { $regex: search, $options: 'i' } },
       { content: { $regex: search, $options: 'i' } },
     ];
 
     const posts = await Post.find(query)
-      .populate('author', 'name avatar')
+      .populate('author', 'fullName username avatar')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
@@ -24,7 +25,7 @@ export const getAllPosts = async (req, res) => {
     const total = await Post.countDocuments(query);
 
     res.json({
-      posts,
+      data: posts,
       currentPage: Number(page),
       totalPages: Math.ceil(total / limit),
       total,
@@ -39,10 +40,9 @@ export const getAllPosts = async (req, res) => {
 // @access  Public
 export const getPostBySlug = async (req, res) => {
   try {
-    const post = await Post.findOne({ slug: req.params.slug }).populate('author', 'name avatar bio');
+    const post = await Post.findOne({ slug: req.params.slug }).populate('author', 'fullName username avatar bio');
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    // Increment views
     post.views += 1;
     await post.save();
 
@@ -57,14 +57,17 @@ export const getPostBySlug = async (req, res) => {
 // @access  Private
 export const createPost = async (req, res) => {
   try {
-    const { title, content, tags, coverImage, published } = req.body;
+    const { title, content, category, description, tags, coverImage, published, readTime } = req.body;
 
     const post = await Post.create({
       title,
       content,
-      tags,
-      coverImage,
-      published,
+      category: category || 'General',
+      description: description || '',
+      tags: tags || [],
+      coverImage: coverImage || '',
+      readTime: readTime || '1m',
+      published: published ?? false,
       author: req.user._id,
     });
 
@@ -86,8 +89,8 @@ export const updatePost = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this post' });
     }
 
-    const { title, content, tags, coverImage, published } = req.body;
-    Object.assign(post, { title, content, tags, coverImage, published });
+    const { title, content, category, description, tags, coverImage, published, readTime } = req.body;
+    Object.assign(post, { title, content, category, description, tags, coverImage, published, readTime });
     await post.save();
 
     res.json({ message: 'Post updated', post });
@@ -146,8 +149,107 @@ export const toggleLike = async (req, res) => {
 // @access  Private
 export const getMyPosts = async (req, res) => {
   try {
-    const posts = await Post.find({ author: req.user._id }).sort({ createdAt: -1 });
-    res.json(posts);
+    const { page = 1, limit = 20 } = req.query;
+    const posts = await Post.find({ author: req.user._id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const total = await Post.countDocuments({ author: req.user._id });
+
+    res.json({
+      data: posts,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Save a post
+// @route   POST /api/posts/:id/save
+// @access  Private
+export const savePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    const userId = req.user._id.toString();
+    if (!post.savedBy.some((id) => id.toString() === userId)) {
+      post.savedBy.push(req.user._id);
+      await post.save();
+    }
+
+    res.json({ message: 'Post saved' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Unsave a post
+// @route   POST /api/posts/:id/unsave
+// @access  Private
+export const unsavePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    post.savedBy = post.savedBy.filter((id) => id.toString() !== req.user._id.toString());
+    await post.save();
+
+    res.json({ message: 'Post unsaved' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get saved posts for current user
+// @route   GET /api/posts/saved
+// @access  Private
+export const getSavedPosts = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const posts = await Post.find({ savedBy: req.user._id, published: true })
+      .populate('author', 'fullName username avatar')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const total = await Post.countDocuments({ savedBy: req.user._id, published: true });
+
+    res.json({
+      data: posts,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get dashboard stats for current user
+// @route   GET /api/posts/dashboard-stats
+// @access  Private
+export const getDashboardStats = async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.user._id });
+    const totalPosts = posts.length;
+    const totalViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
+    const totalLikes = posts.reduce((sum, p) => sum + (p.likes?.length || 0), 0);
+    const recentPosts = await Post.find({ author: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(6);
+
+    res.json({
+      totalPosts,
+      totalViews,
+      totalLikes,
+      followers: 0,
+      recentPosts,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,9 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterCard() {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
+
+  const { register, isLoading, error } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalError('');
+    try {
+      await register(fullName, email, password, username);
+      router.push('/dashboard');
+    } catch (err) {
+      if (err instanceof Error) {
+        setLocalError(err.message);
+      }
+    }
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased font-sans">
       {/* Outer Card Container */}
@@ -46,10 +69,15 @@ export default function RegisterCard() {
             <p className="text-sm text-gray-500 mt-1">
               Start writing and sharing your ideas with the world.
             </p>
+            {(error || localError) && (
+              <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100">
+                {error || localError}
+              </div>
+            )}
           </div>
 
           {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name Field */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
@@ -57,7 +85,10 @@ export default function RegisterCard() {
               </label>
               <input
                 type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Your full name"
+                required
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -69,7 +100,10 @@ export default function RegisterCard() {
               </label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
+                required
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -81,7 +115,10 @@ export default function RegisterCard() {
               </label>
               <input
                 type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="@yourhandle"
+                required
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -93,7 +130,10 @@ export default function RegisterCard() {
               </label>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a password"
+                required
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -117,10 +157,11 @@ export default function RegisterCard() {
             {/* Action Button */}
             <button
               type="submit"
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99]"
+              disabled={isLoading}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span>Create account</span>
-              <span className="text-base font-light">→</span>
+              <span>{isLoading ? 'Creating account...' : 'Create account'}</span>
+              {!isLoading && <span className="text-base font-light">→</span>}
             </button>
           </form>
 

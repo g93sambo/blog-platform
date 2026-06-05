@@ -7,7 +7,7 @@ import Post from '../models/Post.model.js';
 export const getComments = async (req, res) => {
   try {
     const comments = await Comment.find({ post: req.params.postId })
-      .populate('author', 'name avatar')
+      .populate('author', 'fullName username avatar')
       .sort({ createdAt: -1 });
     res.json(comments);
   } catch (error) {
@@ -29,7 +29,7 @@ export const addComment = async (req, res) => {
       author: req.user._id,
     });
 
-    const populated = await comment.populate('author', 'name avatar');
+    const populated = await comment.populate('author', 'fullName username avatar');
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });

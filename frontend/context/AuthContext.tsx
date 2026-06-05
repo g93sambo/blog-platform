@@ -65,37 +65,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      // TESTING MODE: Accept any credentials
-      // Remove this section when connecting to real backend
-      const fakeUser: User = {
-        id: '1',
-        fullName: 'Test User',
-        username: 'testuser',
-        email: email,
-        bio: 'This is a test account for preview purposes',
-        followers: 234,
-        following: 123,
-        posts: 45,
-      };
-
-      const fakeToken = 'fake-jwt-token-' + Math.random().toString(36).substr(2, 9);
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      localStorage.setItem('auth_token', fakeToken);
-      localStorage.setItem('auth_user', JSON.stringify(fakeUser));
-
-      setState({
-        user: fakeUser,
-        token: fakeToken,
-        isLoading: false,
-        error: null,
-        isAuthenticated: true,
-      });
-
-      // UNCOMMENT BELOW WHEN YOU HAVE A REAL BACKEND:
-      /*
       const response = await apiClient.login(email, password);
 
       if (!response.success || !response.data) {
@@ -114,7 +83,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         error: null,
         isAuthenticated: true,
       });
-      */
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
       setState({

@@ -1,9 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginCard() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
+  
+  const { login, isLoading, error } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalError('');
+    try {
+      await login(email, password);
+      router.push('/dashboard');
+    } catch (err) {
+      if (err instanceof Error) {
+        setLocalError(err.message);
+      }
+    }
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased font-sans">
       {/* Outer Card Container */}
@@ -46,10 +67,15 @@ export default function LoginCard() {
             <p className="text-sm text-gray-500 mt-1">
               Log in to your account to continue.
             </p>
+            {(error || localError) && (
+              <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100">
+                {error || localError}
+              </div>
+            )}
           </div>
 
           {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
@@ -57,7 +83,10 @@ export default function LoginCard() {
               </label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
+                required
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -76,7 +105,10 @@ export default function LoginCard() {
               <div className="relative">
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
+                  required
                   className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer text-xs select-none">
@@ -101,10 +133,11 @@ export default function LoginCard() {
             {/* Action Button */}
             <button
               type="submit"
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99]"
+              disabled={isLoading}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span>Log in</span>
-              <span className="text-base font-light">→</span>
+              <span>{isLoading ? 'Logging in...' : 'Log in'}</span>
+              {!isLoading && <span className="text-base font-light">→</span>}
             </button>
           </form>
 

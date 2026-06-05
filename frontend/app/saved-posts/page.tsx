@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { Post, PaginatedResponse } from '@/types';
+import { apiClient } from '@/lib/api';
 
 interface SavedPostWithBanner extends Post {
   bannerColor?: string;
