@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "builds": [
+  "projects": [
     {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
+      "name": "blog-platform-frontend",
+      "rootDirectory": "frontend",
+      "framework": "nextjs"
+    },
     {
-      "src": "/(.*)",
-      "dest": "frontend/$1"
+      "name": "blog-platform-backend",
+      "rootDirectory": "backend",
+      "framework": "express"
     }
   ]
 }
