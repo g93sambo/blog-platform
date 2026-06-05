@@ -1,8 +1,10 @@
-'use client';
-
 import { ApiResponse, PaginatedResponse, Post, User, AnalyticsData, NotificationSettings } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// In production this is set via Vercel's NEXT_PUBLIC_API_URL environment variable.
+// In development it falls back to localhost.
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (typeof window !== 'undefined' ? `${window.location.origin}/api` : 'http://localhost:5000/api');
 
 class ApiClient {
   private baseURL: string;
