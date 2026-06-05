@@ -2,8 +2,22 @@
 
 import React from 'react';
 import Link from 'next/link';
+// 1. Import the router hook
+import { useRouter } from 'next/navigation';
 
 export default function LoginCard() {
+  // 2. Initialize the router
+  const router = useRouter();
+
+  // 3. Handle the form submission and redirect
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // You can add login authentication or validation logic here later!
+    
+    router.push('/dashboard'); 
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased font-sans">
       {/* Outer Card Container */}
@@ -48,8 +62,8 @@ export default function LoginCard() {
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+          {/* Form with updated onSubmit */}
+          <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
@@ -68,7 +82,6 @@ export default function LoginCard() {
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500">
                   Password
                 </label>
-                {/* Updated Route Link here */}
                 <Link href="/forgot-password" className="text-xs font-medium text-blue-500 hover:underline">
                   Forgot password?
                 </Link>

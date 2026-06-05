@@ -2,8 +2,22 @@
 
 import React from 'react';
 import Link from 'next/link';
+// 1. Import the router hook
+import { useRouter } from 'next/navigation';
 
 export default function RegisterCard() {
+  // 2. Initialize the router
+  const router = useRouter();
+
+  // 3. Handle the form submission and redirect
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // You can add registration or field validation logic here later!
+    
+    router.push('/dashboard');
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased font-sans">
       {/* Outer Card Container */}
@@ -48,8 +62,8 @@ export default function RegisterCard() {
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+          {/* Form with updated onSubmit */}
+          <form onSubmit={handleRegister} className="space-y-4">
             {/* Full Name Field */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
