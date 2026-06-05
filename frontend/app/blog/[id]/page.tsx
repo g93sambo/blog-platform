@@ -75,7 +75,7 @@ export default function BlogDetailsPage({ params }: { params: Promise<{ id: stri
         <p className="text-sm text-gray-500 text-center max-w-sm">
           The routing key <code className="bg-gray-100 px-1.5 py-0.5 rounded text-red-600">/blog/{currentId}</code> does not have an allocated text block dataset configured yet.
         </p>
-        <Link href="/" className="text-sm text-[#378add] font-medium hover:underline mt-2">
+        <Link href="/dashboard" className="text-sm text-[#378add] font-medium hover:underline mt-2">
           ← Return to Dashboard
         </Link>
       </main>
