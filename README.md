@@ -10,7 +10,7 @@
 | 3 | 23120112018 | ERIC-MAKWE, Chigozirim | Backend Dev |
 | 4 | 24120112027 | KUKOYI, Oluwajuwonlo | Frontend Dev |
 | 5 | 24120112036 | NGIGE, Nnaemeka | Frontend Dev |
-| 6 | 25120112062 | OBARISIAGBON, Eseosa | QA / Docs |
+| 6 | 25120112062 | OBARISIAGBON, Eseosa | Frontend Dev |
 | 7 | 24120112046 | ONWUEGBUCHU, Brian | QA / Docs |
 | 8 | 24120112055 | SOYINKA, Fikunmi | DevOps / Integration |
 
