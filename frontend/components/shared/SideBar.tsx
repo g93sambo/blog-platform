@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation'; // Great for highlighting the active tab!
 import { 
   LayoutDashboard, 
   FileText, 
@@ -9,80 +12,61 @@ import {
   Settings 
 } from 'lucide-react';
 
-interface UserProfile {
-  name: string;
-  role: string;
-}
+export default function SideBar() {
+  const pathname = usePathname();
 
-interface SidebarProps {
-  user?: UserProfile | null;
-}
-
-interface NavItemProps {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  isActive?: boolean;
-}
-
-const NavItem = ({ href, label, icon: Icon, isActive }: NavItemProps) => {
-  return (
-    <Link
-      href={href}
-      className={`flex items-center gap-4 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-        isActive
-          ? 'bg-[#1E293B] text-blue-400'
-          : 'text-gray-400 hover:bg-[#111827] hover:text-white'
-      }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span>{label}</span>
-    </Link>
-  );
-};
-
-export default function Sidebar({ user }: SidebarProps) {
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  // Explicit route mapping data array matching our file system structure
+  const navItems = [
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { label: 'My Posts', href: '/dashboard/posts', icon: FileText },
+    { label: 'New Post', href: '/write', icon: PlusSquare },
+    { label: 'Analytics', href: '/analytics', icon: BarChart2 },
+    { label: 'Saved', href: '/saved-posts', icon: Bookmark },
+    { label: 'Settings', href: '/settings', icon: Settings },
+  ];
 
   return (
-    <aside className="w-64 h-screen bg-[#0F172A] text-white flex flex-col justify-between p-4 sticky top-0 border-r border-slate-800">
-      <div className="flex flex-col gap-8">
-        <div className="px-4 py-2 text-2xl font-bold tracking-tight">
-          Blog<span className="text-blue-500">ify</span>
-        </div>
-
-       <nav className="flex flex-col gap-1">
-  <NavItem href="/dashboard" label="Dashboard" icon={LayoutDashboard} isActive />
-  <NavItem href="/dashboard/my-posts" label="My Posts" icon={FileText} />
-  <NavItem href="/dashboard/new-post" label="New Post" icon={PlusSquare} />
-  <NavItem href="/dashboard/analytics" label="Analytics" icon={BarChart2} />
-  <NavItem href="/dashboard/saved" label="Saved" icon={Bookmark} />
-  <NavItem href="/dashboard/settings" label="Settings" icon={Settings} />
-</nav>
+    <aside className="w-64 h-screen bg-[#0f141c] text-gray-400 flex flex-col border-r border-gray-850 select-none">
+      {/* Platform Branding Logo */}
+      <div className="px-6 py-6 border-b border-gray-900">
+        <Link href="/dashboard" className="text-xl font-bold text-white tracking-tight cursor-pointer">
+          Blog<span className="text-[#3B82F6]">ify</span>
+        </Link>
       </div>
 
-      {user ? (
-        <div className="flex items-center gap-3 border-t border-slate-800 pt-4 px-2">
-          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold border border-slate-600">
-            {getInitials(user.name)}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold truncate text-gray-200">{user.name}</span>
-            <span className="text-xs text-gray-500 truncate">{user.role}</span>
-          </div>
+      {/* Navigation Link Menu Tree */}
+      <nav className="flex-1 px-4 py-4 flex flex-col gap-1">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
+
+          return (
+            <Link 
+              key={item.href} 
+              href={item.href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${
+                isActive 
+                  ? 'bg-[#1e2633] text-white' 
+                  : 'hover:bg-[#141a24] hover:text-gray-200'
+              }`}
+            >
+              <Icon className={`w-5 h-5 ${isActive ? 'text-[#3B82F6]' : 'text-gray-400'}`} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Mock User Footer Area */}
+      <div className="p-4 border-t border-gray-900 flex items-center gap-3">
+        <div className="w-8 h-8 bg-[#3B82F6] text-white font-bold rounded-full flex items-center justify-center text-xs">
+          KO
         </div>
-      ) : (
-        <div className="border-t border-slate-800 pt-4 px-4 text-sm text-gray-500">
-          Not logged in
+        <div className="flex flex-col min-w-0">
+          <span className="text-xs font-semibold text-white truncate">Kelvin O.</span>
+          <span className="text-[10px] text-gray-500 truncate">Author Account</span>
         </div>
-      )}
+      </div>
     </aside>
   );
 }
