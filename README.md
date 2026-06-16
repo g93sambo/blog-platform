@@ -12,7 +12,7 @@
 | 5 | 24120112036 | NGIGE, Nnaemeka | Frontend Dev |
 | 6 | 25120112062 | OBARISIAGBON, Eseosa | Frontend Dev |
 | 7 | 24120112046 | ONWUEGBUCHU, Brian | QA / Docs |
-| 8 | 24120112055 | SOYINKA, Fikunmi | DevOps / Integration |
+| 8 | 24120112055 | SOYINKA, Fikunmi | QA / Docs|
 
 ---
 
